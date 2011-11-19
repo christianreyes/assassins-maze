@@ -41,11 +41,49 @@ app.listen(port);
 io.set('transports', ['xhr-polling']); 
 io.set('polling duration', 10);
 
-io.sockets.on('connection', function (socket) {
-  socket.on('msg-to-server', function (data) {
+var LOG = true;
+
+function log(data){
+  if(LOG) {
     console.log(data);
-    io.sockets.emit('msg-to-client', data);
+  }
+}
+
+var users = {};
+
+io.sockets.on('connection', function (socket) {
+  
+  socket.emit("current users", users);
+  
+  socket.on("add me to users", function (data) {
+    log(data);
+    
+    /* Client-side ...
+    var data = { 
+                  client_id: my_client_id, 
+                  color: my_box.css("background-color"),
+                  position: my_box.position()
+               };
+    */
+    
+    users[data.client_id] = data;
+    
+    socket.broadcast.emit("new user connected", data);
   });
+  
+  socket.on('i moved', function (data) {
+    console.log(data);
+    
+    users[ data.client_id ].position = data.position;
+    
+    socket.broadcast.emit('user moved', data);
+  });
+  
+  
+  socket.on('disconnect', function () {    
+    io.sockets.emit('user disconnected', socket.id);
+  });
+  
 });
 
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
