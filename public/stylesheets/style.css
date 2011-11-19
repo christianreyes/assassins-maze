@@ -1,5 +1,6 @@
 body {
-  padding: 50px;
+  margin: 0;
+  padding: 0px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -13,4 +14,16 @@ a {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+#new_user {
+  display: none;
+  text-align: center;
+  margin: 0 auto;
+  width: 500px;
+  padding: 10px;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  border-radius: 0 0 15px 15px;;
 }

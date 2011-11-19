@@ -8,6 +8,8 @@ $(function(){
   var socket = io.connect();
   
   socket.on("connect", function(){
+    log("CONNECTED!");
+    
     my_client_id = socket.socket.sessionid;
     
     my_box = createBox( my_client_id ,
@@ -21,6 +23,7 @@ $(function(){
                  position:  my_box.position()
                 };
                           
+    log("my client id " + my_client_id)
     socket.emit("add me to users", data);
   });
 
@@ -43,68 +46,73 @@ $(function(){
     }
   });
   
-  socket.on("current users", function (data){
-    console.log(data);
+  socket.on("current users", function (data){ 
+    log("current_users");
+    log(data);
     
     for(id in data){
-      var user = data[id];
-      others[user.client_id] = user;
-      createBox( user.client_id, user.position.left, user.position.top, user.color );
+      var user_data = data[id];
+      
+      add_other_user(user_data);
     }
 
   });
   
   socket.on("user disconnected", function (data){
-    console.log(data);
+    log("user disconnected");
+    log(data);
+    
+    $("#new_user").text("user disconnected: " + data).show();
       
     delete others[data];
     removeBox(data);
   });
   
   socket.on("new user connected", function (data){
-    console.log(data);
+    log("new user connected");
+    log(data);
     
-    if( typeof(others[data.client_id]) == "undefined" ){
-      var other_box = createBox(data.client_id, data.position.left, data.position.top, data.color);
-      
-      others[data.client_id] = other_box;
-    }
+    $("#new_user").text("user connected: " + data.client_id);
+    
+    add_other_user(data);
   });
   
   socket.on('user moved', function (data) {
-    console.log(data);
+    log("user moved");
+    log(data);
     
-    move_position( others[data.client_id], data.position );
+    var box = $(others[data.client_id]);
+    
+    box
+      .css("left", data.position.left)
+      .css("top", data.position.top);
   });
-  
-  function move_position(elem, position){
-    elem
-      .css("left", position.left)
-      .css("top", position.top);
-  }
   
   function move_key(elem, dir){
     var MOVE_PX = 30;
     
     switch(dir){
       case "up":
-        elem.css("top", parseInt(elem.css("top")) - MOVE_PX);
+        $(elem).css("top", parseInt(elem.css("top")) - MOVE_PX);
         break;
       case "down":
-        elem.css("top", parseInt(elem.css("top")) + MOVE_PX);
+        $(elem).css("top", parseInt(elem.css("top")) + MOVE_PX);
         break;
       case "left":
-        elem.css("left", parseInt(elem.css("left")) - MOVE_PX);
+        $(elem).css("left", parseInt(elem.css("left")) - MOVE_PX);
         break;
       case "right":
-        elem.css("left", parseInt(elem.css("left")) + MOVE_PX);
+        $(elem).css("left", parseInt(elem.css("left")) + MOVE_PX);
         break;
     }
               
     var data = { 
                   client_id: my_client_id,
-                  position:  elem.position()
+                  position: { left: elem.position().left, top: elem.position().top }
                 };
+    
+    log("i moved");
+    log(data);
     
     socket.emit('i moved', data);
   }
@@ -114,6 +122,14 @@ $(function(){
               HELPERS
   ============================
   */ 
+  
+  function add_other_user(data){
+    if( data.client_id != my_client_id && typeof(others[data.client_id]) == "undefined" ){
+      var other_box = createBox(data.client_id, data.position.left, data.position.top, data.color);
+      
+      others[data.client_id] = other_box;
+    }
+  }
   
   function createBox(id, left, top, color){
     var box = $("<div></div>")
@@ -135,4 +151,11 @@ $(function(){
     });
   }
   
+  function log(data){
+    var LOG = true;
+    
+    if(LOG){
+      console.log(data);
+    }
+  }
 });
