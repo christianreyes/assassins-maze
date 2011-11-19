@@ -81,6 +81,7 @@ io.sockets.on('connection', function (socket) {
   
   
   socket.on('disconnect', function () {    
+    delete users[socket.id];
     io.sockets.emit('user disconnected', socket.id);
   });
   
