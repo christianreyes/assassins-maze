@@ -72,7 +72,7 @@ io.sockets.on('connection', function (socket) {
   });
   
   socket.on('i moved', function (data) {
-    console.log(data);
+    log(data);
     
     users[ data.client_id ].position = data.position;
     
@@ -82,6 +82,7 @@ io.sockets.on('connection', function (socket) {
   
   socket.on('disconnect', function () {    
     delete users[socket.id];
+    log("disconnect" + socket.id);
     io.sockets.emit('user disconnected', socket.id);
   });
   
