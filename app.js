@@ -71,6 +71,14 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit("new user connected", data);
   });
   
+  socket.on("new nickname", function (data) {
+    log(data);
+    
+    users[data.client_id].nickname = data.nickname;
+    
+    socket.broadcast.emit("changed nickname", data);
+  });
+  
   socket.on('i moved', function (data) {
     log(data);
     
@@ -79,6 +87,13 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('user moved', data);
   });
   
+  socket.on("mouse move", function (data) {
+    log(data);
+    
+    users[ data.client_id ].coords = data.coords;
+    
+    socket.broadcast.emit("mouse moved", data);
+  });
   
   socket.on('disconnect', function () {    
     delete users[socket.id];

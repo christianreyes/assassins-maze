@@ -1,2 +1,11 @@
-p#new_user New User
-.box
+#right-sidebar
+  input.nickname(type="text", placeholder="Nickname here")
+  button.change_nickname(type="button") Update
+  h3 Users:
+  ul#users
+    li.me <span class="color"></span> <span class="nickname"></span>
+#content
+  canvas(width=600, height=500)
+  
+  h2 Instructions!
+  p Arrow keys move your <span id="square">SQUARE</span>. Use the mouse to aim.

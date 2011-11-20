@@ -1,52 +1,92 @@
 $(function(){
   
+  /* 
+  ============================
+        INITIALIZATION
+  ============================
+  */
+  
+  var socket = io.connect();
+  
+  var canvas = $("canvas");
+  var context = canvas[0].getContext("2d");
+  
+  var doodle = new Doodle(context);
+  
+  var OBJECT_WIDTH = 36;
+  
   var my_client_id;
   var my_box;
+  
+  var coords = {};
+  
+  var ticker;
+  var TICK_INTERVAL = 40;
                           
   var others = {};
-
-  var socket = io.connect();
+  
+  $("button.change_nickname").click(function(){
+    var data = { 
+                 client_id: my_client_id,
+                 nickname: $("input.nickname").val()
+                };
+                
+    log("change_nickname");
+    log(data);
+                
+    socket.emit("new nickname", data);
+    
+    $("li.me span.nickname").text($("input.nickname").val());
+    $(this).val("");
+    
+    return false;
+  });
+  
+  function setThetaPoint(elem, elem_coords){
+    elem.polygonTheta = Math.atan2(elem_coords.y - elem.centerY, elem_coords.x - elem.centerX );
+  }
+  
+  /* 
+  ============================
+         SOCKET LOGIC
+  ============================
+  */
   
   socket.on("connect", function(){
     log("CONNECTED!");
     
     my_client_id = socket.socket.sessionid;
     
-    my_box = createBox( my_client_id ,
-                        Math.floor( Math.random() * ($(window).width() - 50)),
-                        Math.floor( Math.random() * ($(window).height() - 50)),
+    my_box = createTriangle( my_client_id ,
+                        Math.floor( Math.random() * (canvas.width() - OBJECT_WIDTH * 2) + OBJECT_WIDTH),
+                        Math.floor( Math.random() * (canvas.height() - OBJECT_WIDTH * 2) + OBJECT_WIDTH) ,
                         '#'+Math.floor(Math.random()*16777215).toString(16));
+    
+    $("li.me").attr("id", my_client_id);
+    $("li.me span.color").css("background-color", my_box.display_color );
+    $("li.me span.nickname").text(my_client_id);
+                        
+    $('#square').css("background-color", my_box.display_color );
                           
     var data = { 
                  client_id: my_client_id,
-                 color:     my_box.css("background-color"),
-                 position:  my_box.position()
+                 color:     my_box.fill,
+                 position:  {centerX: my_box.centerX, centerY: my_box.centerY}
                 };
+    
+    ticker = setInterval(function(){ clearAndDraw(); }, TICK_INTERVAL);
+    
+    $(window).bind("keydown", callMove);
+
+    $("canvas").bind("mousemove", function (e){
+      canvasMouseMove(e);
+
+      setThetaPoint(my_box, coords);
+    });
                           
     log("my client id " + my_client_id)
     socket.emit("add me to users", data);
   });
-
-  $(window).bind("keydown", callMove);
-  
-  function callMove(e){
-    switch (e.keyCode ? e.keyCode : e.which) {
-      case 38:  /* Up arrow was pressed. move the box accordingly */
-        move_key(my_box, "up");
-  		  break;
-      case 40:  /* Down arrow was pressed. move the box accordingly */
-        move_key(my_box, "down");
-        break;
-      case 37:  /* Left arrow was pressed. move the box  accordingly */
-  		  move_key(my_box, "left");
-  		  break;
-      case 39:  /* Right arrow was pressed. move the box  accordingly */
-  		  move_key(my_box, "right");
-  		  break;
-      case 32:  /* Space bar was pressed */
-  		  break;
-    }
-  }
   
   socket.on("current users", function (data){ 
     log("current_users");
@@ -85,44 +125,94 @@ $(function(){
     add_other_user(data);
   });
   
+  socket.on("changed nickname", function (data){
+    log("changed nickname");
+    log(data);
+    
+    $("li#" + data.client_id + " span.nickname").text(data.nickname);
+  });
+  
   socket.on('user moved', function (data) {
     log("user moved");
     log(data);
     
-    var box = $(others[data.client_id]);
+    var box = others[data.client_id];
     
-    box
-      .css("left", data.position.left)
-      .css("top", data.position.top);
-     
-    //$(box).animate({left: data.position.left, top:data.position.top}, 50);
+    box.centerX = data.position.centerX;
+    box.centerY = data.position.centerY;
   });
   
+  socket.on('mouse moved', function (data) {
+    log("user mouse moved");
+    log(data);
+    
+    var box = others[data.client_id];
+    
+    setThetaPoint(box, data.coords);
+  });
+  
+  /* 
+  ============================
+           HELPERS
+  ============================
+  */ 
+  
+  function canvasMouseMove(e){
+  	var bb = canvas[0].getBoundingClientRect();
+  	
+    coords.x = (e.clientX - bb.left)*(canvas.width()/bb.width);
+    coords.y = (e.clientY - bb.top)*(canvas.height()/bb.height);
+    
+    var data = {
+                  client_id: my_client_id,
+                  coords: coords
+                };
+    
+    socket.emit("mouse move", data);
+  }
+  
+  function callMove(e){
+    switch (e.keyCode ? e.keyCode : e.which) {
+      case 38:  /* Up arrow was pressed. move the box accordingly */
+        move_key(my_box, 38);
+  		  break;
+      case 40:  /* Down arrow was pressed. move the box accordingly */
+        move_key(my_box, 40);
+        break;
+      case 37:  /* Left arrow was pressed. move the box  accordingly */
+  		  move_key(my_box, 37);
+  		  break;
+      case 39:  /* Right arrow was pressed. move the box  accordingly */
+  		  move_key(my_box, 39);
+  		  break;
+      case 32:  /* Space bar was pressed */
+  		  break;
+    }
+  }
+  
   function move_key(elem, dir){
-    var MOVE_PX = 30;
+    var MOVE_PX = 15;
     
     switch(dir){
-      case "up":
-        $(elem).css("top", parseInt(elem.css("top")) - MOVE_PX);
-        //$(elem).animate({top: "-=" + MOVE_PX}, 50);
+      case 38: /* Up arrow was pressed. move the box accordingly */
+        elem.centerY -= MOVE_PX;
         break;
-      case "down":
-        $(elem).css("top", parseInt(elem.css("top")) + MOVE_PX);
-        //$(elem).animate({top: "+=" + MOVE_PX}, 50);
+      case 40: /* down arrow was pressed. move the box accordingly */
+        elem.centerY += MOVE_PX;
         break;
-      case "left":
-        $(elem).css("left", parseInt(elem.css("left")) - MOVE_PX);
-        //$(elem).animate({left: "-=" + MOVE_PX}, 50);
+      case 37: /* left arrow was pressed. move the box accordingly */
+        elem.centerX -= MOVE_PX;
         break;
-      case "right":
-        $(elem).css("left", parseInt(elem.css("left")) + MOVE_PX);
-        //$(elem).animate({left: "+=" + MOVE_PX}, 50);
+      case 39: /* right arrow was pressed. move the box accordingly */
+        elem.centerX += MOVE_PX;
         break;
     }
+    
+    setThetaPoint(elem, coords);
               
     var data = { 
                   client_id: my_client_id,
-                  position: { left: elem.position().left, top: elem.position().top }
+                  position: { centerX: elem.centerX, centerY: elem.centerY }
                 };
     
     log("i moved");
@@ -131,28 +221,53 @@ $(function(){
     socket.emit('i moved', data);
   }
   
-  /* 
-  ============================
-              HELPERS
-  ============================
-  */ 
+  function clearAndDraw(){
+    context.clearRect(0,0, canvas.width(), canvas.height());
+    
+    doodle.draw();
+  }
   
   function add_other_user(data){
     if( data.client_id != my_client_id && typeof(others[data.client_id]) == "undefined" ){
-      var other_box = createBox(data.client_id, data.position.left, data.position.top, data.color);
+      var other_box = createTriangle(data.client_id, data.position.centerX, data.position.centerY, data.color);
       
       others[data.client_id] = other_box;
+      
+      var new_li = $("<li></li");
+      new_li.attr("id", data.client_id);
+
+      var color = $("<span class='color'></span>");
+      color.css('background-color', data.color);
+
+      var nickname = $("<span class='nickname'></span>");
+
+      if( typeof(data.nickname) == "undefined" ){
+        nickname.text(data.client_id);
+      } else {
+        nickname.text(data.nickname);
+      }
+      
+      new_li.append(color);
+      new_li.append(nickname);
+      $("ul#users").append(new_li);
+      
+      
     }
   }
   
-  function createBox(id, left, top, color){
-    var box = $("<div></div>")
-              .attr("id", id)
-              .addClass("box")
-              .css("left", left)
-              .css("top", top)
-              .css("background-color", color);
-    $("body").append(box);
+  function createTriangle(id, centerX, centerY, color){
+    
+    var box = new PolygonContainer({
+      radius: OBJECT_WIDTH / 2,
+      centerX: centerX, 
+      centerY: centerY,
+      fill: color
+    });
+    
+    box.id = id;
+    box.display_color = color;
+
+    doodle.children.push(box)
     
     return box;
   }
