@@ -18,6 +18,8 @@ $(function(){
   var my_client_id;
   var my_box;
   
+  var projectiles = [];
+  
   var coords = {};
   
   var ticker;
@@ -224,6 +226,22 @@ $(function(){
   function clearAndDraw(){
     context.clearRect(0,0, canvas.width(), canvas.height());
     
+    for(var i = 0 ; i<projectiles.length ; i++){
+      var proj = projectiles[i];
+      
+      proj.left += proj.xVelocity;
+      proj.top += proj.yVelocity;
+      
+      if(proj.left > canvas.width() || proj.left < 0 || proj.top > canvas.height() || proj.top < 0){
+        projectiles.splice(i,1);
+        for(var j = 0; j< doodle.children.length ; j++){
+          if(doodle.children[j] == proj){
+            doodle.children.splice(j,1);
+          }
+        }
+      }
+    }
+    
     doodle.draw();
   }
   
@@ -262,6 +280,48 @@ $(function(){
       centerX: centerX, 
       centerY: centerY,
       fill: color
+    });
+    
+    box.shoot = function(){
+      var container = new Container({
+        left: box.centerX,
+        top: box.centerY,
+        height: 16,
+        width: 16,
+        borderWidth: 0,
+        xVelocity: Math.cos(Math.atan2(coords.y - box.centerY, coords.x - box.centerX)) * 10,
+        yVelocity: Math.sin(Math.atan2(coords.y - box.centerY, coords.x - box.centerX)) * 10
+      });
+      
+      var circle = new Arc({
+        centerX: 8,
+        centerY: 8,
+        lineWidth: 1,
+        fill: color,
+        radius: 6,
+        startingTheta: 0,
+        endingTheta: Math.PI * 2
+      });
+      
+      var data = {
+                    client_id: my_client_id,
+                    color: color,
+                    centerX: centerX,
+                    centerY: centerY,
+                    xVelocity:  Math.cos(Math.atan2(coords.y - box.centerY, coords.x - box.centerX)) * 10,
+                    yVelocity: Math.sin(Math.atan2(coords.y - box.centerY, coords.x - box.centerX)) * 10
+      };
+      
+      socket.emit("fired", data);
+      
+      container.children = [circle];
+      projectiles.push(container);
+      doodle.children.push(container);
+    };
+    
+    $("canvas").click( function(){ 
+      box.shoot();
+      return false;
     });
     
     box.id = id;
