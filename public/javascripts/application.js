@@ -27,7 +27,9 @@ $(function(){
     socket.emit("add me to users", data);
   });
 
-  $(window).bind("keydown", function(e){
+  $(window).bind("keydown", callMove);
+  
+  function callMove(e){
     switch (e.keyCode ? e.keyCode : e.which) {
       case 38:  /* Up arrow was pressed. move the box accordingly */
         move_key(my_box, "up");
@@ -44,7 +46,7 @@ $(function(){
       case 32:  /* Space bar was pressed */
   		  break;
     }
-  });
+  }
   
   socket.on("current users", function (data){ 
     log("current_users");
@@ -68,6 +70,12 @@ $(function(){
     removeBox(data);
   });
   
+  socket.on("disconnect", function (){
+    log("server disconnected");
+    
+    alert("server disconnected");
+  });
+  
   socket.on("new user connected", function (data){
     log("new user connected");
     log(data);
@@ -86,6 +94,8 @@ $(function(){
     box
       .css("left", data.position.left)
       .css("top", data.position.top);
+     
+    //$(box).animate({left: data.position.left, top:data.position.top}, 50);
   });
   
   function move_key(elem, dir){
@@ -94,15 +104,19 @@ $(function(){
     switch(dir){
       case "up":
         $(elem).css("top", parseInt(elem.css("top")) - MOVE_PX);
+        //$(elem).animate({top: "-=" + MOVE_PX}, 50);
         break;
       case "down":
         $(elem).css("top", parseInt(elem.css("top")) + MOVE_PX);
+        //$(elem).animate({top: "+=" + MOVE_PX}, 50);
         break;
       case "left":
         $(elem).css("left", parseInt(elem.css("left")) - MOVE_PX);
+        //$(elem).animate({left: "-=" + MOVE_PX}, 50);
         break;
       case "right":
         $(elem).css("left", parseInt(elem.css("left")) + MOVE_PX);
+        //$(elem).animate({left: "+=" + MOVE_PX}, 50);
         break;
     }
               
