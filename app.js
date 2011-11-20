@@ -74,31 +74,39 @@ io.sockets.on('connection', function (socket) {
   socket.on("new nickname", function (data) {
     log(data);
     
-    users[data.client_id].nickname = data.nickname;
-    
-    socket.broadcast.emit("changed nickname", data);
+    if(users[data.client_id]){
+      users[data.client_id].nickname = data.nickname;
+
+      socket.broadcast.emit("changed nickname", data);
+    }
   });
   
   socket.on('i moved', function (data) {
     log(data);
+    if(users[data.client_id]){
+      users[ data.client_id ].position = data.position;
     
-    users[ data.client_id ].position = data.position;
-    
-    socket.broadcast.emit('user moved', data);
+      socket.broadcast.emit('user moved', data);
+    }
   });
   
   socket.on("mouse move", function (data) {
     log(data);
     
-    users[ data.client_id ].coords = data.coords;
+    if(users[data.client_id]){
+      users[ data.client_id ].coords = data.coords;
     
-    socket.broadcast.emit("mouse moved", data);
+      socket.broadcast.emit("mouse moved", data);
+    }
   });
   
   socket.on('disconnect', function () {    
-    delete users[socket.id];
     log("disconnect " + socket.id);
-    io.sockets.emit('user disconnected', socket.id);
+    
+    if(users[socket.id]){
+      delete users[socket.id];
+      io.sockets.emit('user disconnected', socket.id);
+    }
   });
   
 });

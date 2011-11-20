@@ -364,6 +364,9 @@ function PolygonContainer(attrs) {
 PolygonContainer.inheritsFrom(Container);
 
 PolygonContainer.prototype.draw = function (c) {
+  
+  this.left = this.centerX - this.radius;
+  this.top = this.centerY - this.radius;
     // draw code here
 	c.save();
 	{
@@ -400,7 +403,7 @@ PolygonContainer.prototype.draw = function (c) {
             c.closePath();
             c.fill();
             c.stroke();
-            c.clip();
+            //c.clip();
         }
 	    c.restore();
 

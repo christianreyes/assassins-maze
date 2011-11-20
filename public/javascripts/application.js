@@ -266,7 +266,18 @@ $(function(){
     
     box.id = id;
     box.display_color = color;
+    
+    //var tip = new PolygonContainer({
+    //  left: OBJECT_WIDTH * 6 / 8,
+    //  top: OBJECT_WIDTH * 3 / 8,
+    //  radius: OBJECT_WIDTH / 8,
+    //  centerX: OBJECT_WIDTH * 7 / 8, 
+    //  centerY: OBJECT_WIDTH / 2,
+    //  fill: '#'+Math.floor(Math.random()*16777215).toString(16)
+    //});
 
+    //box.children = [tip];
+    
     doodle.children.push(box)
     
     return box;
