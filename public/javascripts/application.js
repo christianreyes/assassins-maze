@@ -44,8 +44,8 @@ $(function(){
     
     my_client_id = socket.socket.sessionid;
     
-    //var rc = MAZE.randomCellRC();
-    var rc = {r:1, c:1};
+    var rc = MAZE.randomCellRC();
+    //var rc = {r:1, c:1};
     
     my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor() );
     
@@ -56,6 +56,7 @@ $(function(){
     $('span#circle').css("background-color", my_circle.display_color );
                           
     var data = { 
+                 client_id: my_client_id,
                  color:     my_circle.color,
                  position:  {r: my_circle.row, c: my_circle.col}
                 };
@@ -70,6 +71,16 @@ $(function(){
           var xy_diffs = key_to_xy[ key ];
 
           my_circle.move(xy_diffs, rc_diffs);
+          
+          var data = { 
+                        client_id: my_client_id,
+                        key: key
+                      };
+
+          log("i moved");
+          log(data);
+
+          socket.emit('i moved', data);
         }
       }
     });
@@ -77,6 +88,87 @@ $(function(){
     log("my client id " + my_client_id)
     socket.emit("add me to users", data);
   });
+  
+  socket.on("new user connected", function (data){
+    log("new user connected");
+    log(data);
+    
+    $("#new_user").text("user connected: " + data.client_id);
+    
+    add_other_user(data);
+  });
+  
+  socket.on('user moved', function (data) {
+    log("user moved");
+    log(data);
+    
+    var circle = others[data.client_id];
+    
+    var rc_diffs =  key_to_rc[ data.key ];
+    var xy_diffs =  key_to_xy[ data.key ];
+    
+    circle.move(xy_diffs, rc_diffs);
+  });
+  
+  socket.on("changed nickname", function (data){
+    log("changed nickname");
+    log(data);
+    
+    $("li#" + data.client_id + " span.nickname").text(data.nickname);
+  });
+  
+  $("button.change_nickname").click(function(){
+     var data = { 
+                  client_id: my_client_id,
+                  nickname: $("input.nickname").val()
+                 };
+
+     log("change_nickname");
+     log(data);
+
+     socket.emit("new nickname", data);
+
+     $("li.me span.nickname").text($("input.nickname").val());
+     $(this).val("");
+
+     return false;
+   });
+  
+  /* 
+  ============================
+           HELPERS
+  ============================
+  */
+  
+  function add_other_user(data){
+    if( data.client_id != my_client_id && typeof(others[data.client_id]) == "undefined" ){
+      var other_circle = new Circle( data.client_id , 
+                                     MAZE,  
+                                     data.position.r, 
+                                     data.position.c, 
+                                     data.color );
+      
+      others[data.client_id] = other_circle;
+      
+      var new_li = $("<li></li");
+      new_li.attr("id", data.client_id);
+
+      var color = $("<span class='color'></span>");
+      color.css('background-color', data.color);
+
+      var nickname = $("<span class='nickname'></span>");
+
+      if( typeof(data.nickname) == "undefined" ){
+        nickname.text(data.client_id);
+      } else {
+        nickname.text(data.nickname);
+      }
+      
+      new_li.append(color);
+      new_li.append(nickname);
+      $("ul#users").append(new_li);
+    }
+  }
   
   function log(data){
     var LOG = true;

@@ -57,15 +57,7 @@ io.sockets.on('connection', function (socket) {
   socket.on("add me to users", function (data) {
     log(data);
     
-    /* Client-side ...
-    var data = { 
-                  client_id: my_client_id, 
-                  color: my_box.css("background-color"),
-                  position: my_box.position()
-               };
-    */
-    
-    users[data.client_id] = data;
+    users[socket.id] = data;
     
     socket.emit("current users", users);
     socket.broadcast.emit("new user connected", data);
@@ -83,8 +75,8 @@ io.sockets.on('connection', function (socket) {
   
   socket.on('i moved', function (data) {
     log(data);
-    if(users[data.client_id]){
-      users[ data.client_id ].position = data.position;
+    if(users[socket.id]){
+      users[ socket.id ].position = data.position;
     
       socket.broadcast.emit('user moved', data);
     }
