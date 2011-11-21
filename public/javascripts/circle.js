@@ -1,27 +1,28 @@
-function Circle(maze, row, col, color){
+function Circle(id, maze, row, col, color){
+  this.id = id;
   this.row = row;
   this.col = col;
-  
-  var circle = maze.paper.circle(
-                                 row * maze.cell_width + maze.cell_width / 2, 
+  this.color = color;
+  this.element = maze.paper.circle(
                                  col * maze.cell_width + maze.cell_width / 2, 
+                                 row * maze.cell_width + maze.cell_width / 2, 
                                  10
                                 ).attr({fill: color, stroke:"none"});
   
-  circle.canMove = function(rc_coord_diffs){
-    var newR = this.row + rc_coord_diffs.r;
-    var newC = this.col + rc_coord_diffs.c;
+  this.canMove = function(rc_diffs){
+    var newR = this.row + rc_diffs.r;
+    var newC = this.col + rc_diffs.c;
 
     return ! maze.isWall(newR, newC);
   };
   
-  circle.move = function(xy_diffs, rc_diffs){
-    circle.row += rc_diffs.r;
-    circle.col += rc_diffs.c;
+  this.move = function(xy_diffs, rc_diffs){
+    this.row += rc_diffs.r;
+    this.col += rc_diffs.c;
 
-    circle.attr({ 
-                  cx: circle.attrs.cx + maze.cell_width * xy_diffs.x, 
-                  cy: circle.attrs.cy + maze.cell_width * xy_diffs.y
+    this.element.attr({ 
+                  cx: this.element.attrs.cx + maze.cell_width * xy_diffs.x, 
+                  cy: this.element.attrs.cy + maze.cell_width * xy_diffs.y
                 });
   };
 }

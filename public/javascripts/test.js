@@ -18,20 +18,6 @@ $(function(){
 
   drawMaze(MAZE, paper, 25, 25, WALL_WIDTH);
   
-  var key_to_dir = { 
-                    /* up   */  38: { x:  0, y: -1 }, 
-                    /* down */  40: { x:  0, y:  1 }, 
-                    /* left */  37: { x: -1, y:  0 }, 
-                    /* right */ 39: { x:  1, y:  0 } 
-                    };
-                    
-  var key_to_rc = {
-                  /* up   */  38: { r: -1, c:  0 }, 
-                  /* down */  40: { r:  1, c:  0 }, 
-                  /* left */  37: { r:  0, c: -1 }, 
-                  /* right */ 39: { r:  0, c:  1 }
-                  };
-  
   $(window).bind("keydown", function(e){
     var key = e.keyCode ? e.keyCode : e.which ;
     

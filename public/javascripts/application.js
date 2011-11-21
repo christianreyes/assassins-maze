@@ -13,10 +13,25 @@ $(function(){
   var paper = new Raphael($("#canvas_container")[0], 500, 500);
 
   var MAZE = new Maze(paper, 25, 25, "grid", 20);
+  MAZE.draw();
   
   var my_circle;
   
   var others = {};
+  
+  var key_to_xy = { 
+                    /* up   */  38: { x:  0, y: -1 }, 
+                    /* down */  40: { x:  0, y:  1 }, 
+                    /* left */  37: { x: -1, y:  0 }, 
+                    /* right */ 39: { x:  1, y:  0 } 
+                    };
+                    
+  var key_to_rc = {
+                  /* up   */  38: { r: -1, c:  0 }, 
+                  /* down */  40: { r:  1, c:  0 }, 
+                  /* left */  37: { r:  0, c: -1 }, 
+                  /* right */ 39: { r:  0, c:  1 }
+                  };
   
   /* 
   ============================
@@ -24,44 +39,39 @@ $(function(){
   ============================
   */
   
-  function random_row_col(maze){
-    var free = false;
-    
-    while( ! free ){
-      maze.matrix[]
-    }
-  }
-  
   socket.on("connect", function(){
     log("CONNECTED!");
     
     my_client_id = socket.socket.sessionid;
     
-    my_circle = createTriangle( my_client_id ,
-                        Math.floor( Math.random() * (canvas.width() - OBJECT_WIDTH * 2) + OBJECT_WIDTH),
-                        Math.floor( Math.random() * (canvas.height() - OBJECT_WIDTH * 2) + OBJECT_WIDTH) ,
-                        '#'+Math.floor(Math.random()*16777215).toString(16));
+    //var rc = MAZE.randomCellRC();
+    var rc = {r:1, c:1};
+    
+    my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor() );
     
     $("li.me").attr("id", my_client_id);
-    $("li.me span.color").css("background-color", my_box.display_color );
+    $("li.me span.color").css("background-color", my_circle.color );
     $("li.me span.nickname").text(my_client_id);
                         
-    $('#square').css("background-color", my_box.display_color );
+    $('span#circle').css("background-color", my_circle.display_color );
                           
     var data = { 
-                 client_id: my_client_id,
-                 color:     my_box.fill,
-                 position:  {centerX: my_box.centerX, centerY: my_box.centerY}
+                 color:     my_circle.color,
+                 position:  {r: my_circle.row, c: my_circle.col}
                 };
     
-    ticker = setInterval(function(){ clearAndDraw(); }, TICK_INTERVAL);
-    
-    $(window).bind("keydown", callMove);
+    $(window).bind("keydown", function(e){
+      var key = e.keyCode ? e.keyCode : e.which ;
 
-    $("canvas").bind("mousemove", function (e){
-      canvasMouseMove(e);
+      if( key in key_to_xy) {
+        var rc_diffs =  key_to_rc[ key ];
 
-      setThetaPoint(my_box, coords);
+        if( my_circle.canMove(rc_diffs) ) {
+          var xy_diffs = key_to_xy[ key ];
+
+          my_circle.move(xy_diffs, rc_diffs);
+        }
+      }
     });
                           
     log("my client id " + my_client_id)
@@ -74,5 +84,9 @@ $(function(){
     if(LOG){
       console.log(data);
     }
+  }
+  
+  function randomColor(){
+    return '#'+Math.floor(Math.random()*16777215).toString(16);
   }
 });
