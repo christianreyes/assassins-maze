@@ -12,7 +12,7 @@ $(function(){
   
   var WALL_WIDTH = 20;
   
-  var paper  = new Raphael($("#canvas_container")[0], 500, 500);
+  var paper = new Raphael($("#canvas_container")[0], 500, 500);
     
   var my_circle = make_circle(paper, 1, 1, STEP, "red");
 
@@ -66,7 +66,8 @@ function drawMaze(maze, paper, rows, cols, width){
 }
 
 function make_circle(paper, row, col, step, color){
-  var circle = paper.circle(row * step + step / 2, col * step + step / 2 , 10).attr({fill: color, stroke:"none"});
+  var circle = paper.circle(row * step + step / 2, col * step + step / 2 , 10)
+                        .attr({fill: color, stroke:"none"});
   
   circle.row = row;
   circle.col = col;

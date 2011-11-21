@@ -13,15 +13,17 @@ a {
   margin: 0 auto;
   padding: 20px;
 	overflow: auto;
-	width: 630px;
+	width: 500px;
 }
 
-canvas
+#canvas_container
 {
     margin: 20px auto 0;
     -moz-box-shadow: 0 0 5px 5px #888;
     -webkit-box-shadow: 0 0 5px 5px#888;
     box-shadow: 0 0 5px 5px #888;
+    width: 500px;
+    height: 500px;
 }
 
 #right-sidebar {
