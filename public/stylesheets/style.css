@@ -17,6 +17,11 @@ a {
 	width: 500px;
 }
 
+#msg {
+  color: red;
+  display: none;
+}
+
 #canvas_container
 {
     margin: 20px auto 0;

@@ -97,7 +97,7 @@ io.sockets.on('connection', function (socket) {
     
     if(users[socket.id]){
       delete users[socket.id];
-      io.sockets.emit('user disconnected', socket.id);
+      io.sockets.emit('user disconnected', { client_id: socket.id} );
     }
   });
   

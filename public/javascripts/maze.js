@@ -42,14 +42,16 @@ function Maze(paper, rows, cols, type, cell_width){
   };
   
   this.randomCellRC = function(){
-    var r = Math.floor( Math.random() * this.rows + 1);
-    var c = Math.floor( Math.random() * this.cols + 1);
-    var found_wall = this.matrix[r][c].wall;
+    var r = Math.floor( Math.random() * this.rows );
+    var c = Math.floor( Math.random() * this.cols );
+    var cell = this.matrix[r][c];
+    var found_wall = cell.wall;
     
     while( found_wall ){
-      r = Math.floor( Math.random() * this.rows + 1);
-      c = Math.floor( Math.random() * this.cols + 1);
-      found_wall = this.matrix[r][c].wall;
+      r = Math.floor( Math.random() * this.rows );
+      c = Math.floor( Math.random() * this.cols );
+      cell = this.matrix[r][c];
+      found_wall = cell.wall;
     }
     
     return {r: r, c: c};   

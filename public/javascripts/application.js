@@ -6,8 +6,6 @@ $(function(){
   ============================
   */
   
-  var socket = io.connect();
-  
   var my_client_id;
   
   var paper = new Raphael($("#canvas_container")[0], 500, 500);
@@ -39,8 +37,12 @@ $(function(){
   ============================
   */
   
+  var socket = io.connect();
+  
   socket.on("connect", function(){
     log("CONNECTED!");
+    
+    $('#msg').text("Server Connected!").delay(3000).slideUp();
     
     my_client_id = socket.socket.sessionid;
     
@@ -49,17 +51,19 @@ $(function(){
     
     my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor() );
     
-    $("li.me").attr("id", my_client_id);
+    $("li.me").addClass(my_client_id);
     $("li.me span.color").css("background-color", my_circle.color );
     $("li.me span.nickname").text(my_client_id);
                         
-    $('span#circle').css("background-color", my_circle.display_color );
+    $('span#circle').css("background-color", my_circle.color );
                           
     var data = { 
                  client_id: my_client_id,
                  color:     my_circle.color,
                  position:  {r: my_circle.row, c: my_circle.col}
                 };
+    
+    
     
     $(window).bind("keydown", function(e){
       var key = e.keyCode ? e.keyCode : e.which ;
@@ -89,6 +93,18 @@ $(function(){
     socket.emit("add me to users", data);
   });
   
+  socket.on("current users", function (data){ 
+    log("current_users");
+    log(data);
+    
+    for(client_id in data){
+      var user_data = data[client_id];
+      
+      add_other_user(user_data);
+    }
+
+  });
+  
   socket.on("new user connected", function (data){
     log("new user connected");
     log(data);
@@ -108,6 +124,13 @@ $(function(){
     var xy_diffs =  key_to_xy[ data.key ];
     
     circle.move(xy_diffs, rc_diffs);
+  });
+  
+  socket.on("user disconnected", function (data){
+    log("user disconnected");
+    log(data);
+    
+    removeOther(data);
   });
   
   socket.on("changed nickname", function (data){
@@ -133,6 +156,23 @@ $(function(){
 
      return false;
    });
+   
+   socket.on("disconnect", function (){
+     log("server disconnected");
+     
+     $('#msg').text("Server Disconnected!").slideDown();
+     
+     for(client_id in others){
+       removeOther({client_id: client_id});
+     }
+     
+     $('.' + my_client_id).fadeOut(1000, function(){
+       $(this).remove();
+     });
+     my_circle.element.animate({opacity: 0}, 1000, function(){
+       this.remove();
+     });
+   });
   
   /* 
   ============================
@@ -151,7 +191,7 @@ $(function(){
       others[data.client_id] = other_circle;
       
       var new_li = $("<li></li");
-      new_li.attr("id", data.client_id);
+      new_li.addClass(data.client_id);
 
       var color = $("<span class='color'></span>");
       color.css('background-color', data.color);
@@ -168,6 +208,16 @@ $(function(){
       new_li.append(nickname);
       $("ul#users").append(new_li);
     }
+  }
+  
+  function removeOther(data){
+    $('.' + data.client_id).fadeOut(1000, function(){
+      $(this).remove();
+    });
+    others[data.client_id].element.animate({opacity: 0}, 1000, function(){
+      this.remove();
+      delete others[data];
+    });
   }
   
   function log(data){
