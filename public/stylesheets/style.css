@@ -60,3 +60,7 @@ ul#users li span.color {
   width: 10px;
   display: inline-block;
 }
+
+span.color {
+  margin-right: 5px;
+}

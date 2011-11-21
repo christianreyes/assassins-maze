@@ -6,6 +6,35 @@ $(function(){
   ============================
   */
   
+  $('input.nickname').bind("keydown", function(e){
+     var code = (e.keyCode ? e.keyCode : e.which);
+      if(code == 13) { //Enter keycode
+        changeNickname();
+        $(this).blur();
+        $('#canvas_container').focus();
+      }
+  });
+  
+  function changeNickname(){
+    var data = { 
+                  client_id: my_client_id,
+                  nickname: $("input.nickname").val()
+                 };
+
+     log("change_nickname");
+     log(data);
+
+     socket.emit("new nickname", data);
+
+     $("li.me span.nickname").text($("input.nickname").val());
+  }
+  
+  $("button.change_nickname").click(function(){
+    changeNickname()
+    $('#canvas_container').focus();
+    return false;
+  });
+  
   var my_client_id;
   
   var paper = new Raphael($("#canvas_container")[0], 500, 500);
@@ -53,7 +82,7 @@ $(function(){
     
     $("li.me").addClass(my_client_id);
     $("li.me span.color").css("background-color", my_circle.color );
-    $("li.me span.nickname").text(my_client_id);
+    $("li.me span.nickname").text("User");
                         
     $('span#circle').css("background-color", my_circle.color );
                           
@@ -98,9 +127,11 @@ $(function(){
     log(data);
     
     for(client_id in data){
-      var user_data = data[client_id];
+      if(typeof(others[client_id]) == "undefined"){
+        var user_data = data[client_id];
       
-      add_other_user(user_data);
+        add_other_user(user_data);
+      }
     }
 
   });
@@ -137,25 +168,10 @@ $(function(){
     log("changed nickname");
     log(data);
     
-    $("li#" + data.client_id + " span.nickname").text(data.nickname);
+    $("li." + data.client_id + " span.nickname").text(data.nickname);
   });
   
-  $("button.change_nickname").click(function(){
-     var data = { 
-                  client_id: my_client_id,
-                  nickname: $("input.nickname").val()
-                 };
 
-     log("change_nickname");
-     log(data);
-
-     socket.emit("new nickname", data);
-
-     $("li.me span.nickname").text($("input.nickname").val());
-     $(this).val("");
-
-     return false;
-   });
    
    socket.on("disconnect", function (){
      log("server disconnected");
@@ -199,7 +215,7 @@ $(function(){
       var nickname = $("<span class='nickname'></span>");
 
       if( typeof(data.nickname) == "undefined" ){
-        nickname.text(data.client_id);
+        nickname.text("User");
       } else {
         nickname.text(data.nickname);
       }
