@@ -24,22 +24,22 @@ $(function(){
   drawMaze(MAZE, paper, 25, 25, WALL_WIDTH);
   
   var key_to_dir = { 
-                    /* up   */  38: [0, -1], 
-                    /* down */  40: [0, 1], 
-                    /* left */  37: [-1, 0], 
-                    /* right */ 39: [1, 0] 
+                    /* up   */  38: { x:  0, y: -1 }, 
+                    /* down */  40: { x:  0, y:  1 }, 
+                    /* left */  37: { x: -1, y:  0 }, 
+                    /* right */ 39: { x:  1, y:  0 } 
                     };
                     
   var key_to_rc = {
-                  /* up   */  38: [-1, 0], 
-                  /* down */  40: [1, 0], 
-                  /* left */  37: [0, -1], 
-                  /* right */ 39: [0, 1] 
+                  /* up   */  38: { r: -1, c:  0 }, 
+                  /* down */  40: { r:  1, c:  0 }, 
+                  /* left */  37: { r:  0, c: -1 }, 
+                  /* right */ 39: { r:  0, c:  1 }
                   };
                   
   circle.canMove = function(coord_diffs){
-    var newR = this.row + coord_diffs[0];
-    var newC = this.col + coord_diffs[1];
+    var newR = this.row + coord_diffs.r;
+    var newC = this.col + coord_diffs.c;
 
     return ! MAZE[newR][newC];
   }
@@ -49,18 +49,15 @@ $(function(){
     
     if( key in key_to_dir) {
       var xy_transform = key_to_dir[ key ];
-      var rc_transform = key_to_rc[ key ];
+      var rc_transform =  key_to_rc[ key ];
 
       if( circle.canMove(rc_transform) ) {
-        circle.row += rc_transform[0];
-        circle.col += rc_transform[1];
-
-        console.log(circle.row);
-        console.log(circle.col);
+        circle.row += rc_transform.r;
+        circle.col += rc_transform.c;
 
         circle.attr({ 
-                      cx: circle.attrs.cx + STEP * xy_transform[0], 
-                      cy: circle.attrs.cy + STEP * xy_transform[1]
+                      cx: circle.attrs.cx + STEP * xy_transform.x, 
+                      cy: circle.attrs.cy + STEP * xy_transform.y
                     });
       }
     }
