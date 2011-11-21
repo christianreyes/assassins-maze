@@ -1,24 +1,21 @@
 $(function(){
+  var ROWS = 25;
+  var COLS = 25;
+  
   var paper  = new Raphael($("#canvas_container")[0], 500, 500);
     
-  // tetronimo.animate({transform: "...r360"}, 1000, "<>").animate({tranform: "100 100"}, 1000, "<>");
-  
   var circle = paper.circle(30,30, 10).attr({fill: "red", stroke:"none"});
-  
-  var set = paper.set()
-  set.push(circle);
   
   var STEP = 20;
   
   var WALL_WIDTH = 20;
   
-  drawMaze(paper, 40, 40, WALL_WIDTH);
+  drawMaze(paper, 25, 25, WALL_WIDTH);
   
-  var code_to_dir = { 38: [0, -1], 40: [0, 1], 37: [-1, 0], 39: [1, 0] }
+  var key_to_dir = { 38: [0, -1], 40: [0, 1], 37: [-1, 0], 39: [1, 0] }
   
   $(window).bind("keydown", function(e){
-    var val = e.keyCode;
-    var transform = code_to_dir[val];
+    var transform = key_to_dir[ e.keyCode ? e.keyCode : e.which ];
     
     if( typeof(transform) != "undefined" ) {
       circle.attr({ cx: circle.attrs.cx + STEP * transform[0], 
@@ -29,10 +26,15 @@ $(function(){
 });
 
 function drawMaze(paper, rows, cols, width){
-  for(var i=0; i<rows ; i+=2){
-    for(var j=0; j<cols ; j+=2){
-      var rect = paper.rect(i * width, j * width, width, width)
-      rect.attr({fill: "green", stroke: "none"});
+  for(var i=0; i<rows ; i++){
+    for(var j=0; j<cols ; j++){
+      var border = (i == 0) || (j == 0) || (i== rows - 1) || (j == cols - 1);
+      var even = (i%2 == 0) && (j%2 == 0);
+      
+      if( border || even ){
+        var rect = paper.rect(i * width, j * width, width, width)
+        rect.attr({fill: "green", stroke: "none"});
+      }
     }
   }
 }
