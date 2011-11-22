@@ -37,9 +37,9 @@ $(function(){
   
   var my_client_id;
   
-  var paper = new Raphael($("#canvas_container")[0], 500, 500);
+  var paper = new Raphael($("#canvas_container")[0], 500, 420);
 
-  var MAZE = new Maze(paper, 25, 25, "grid", 20);
+  var MAZE = new Maze(paper, 21, 25, "grid", 20);
   MAZE.draw();
   
   var my_circle;
@@ -237,7 +237,7 @@ $(function(){
   }
   
   function log(data){
-    var LOG = true;
+    var LOG = false;
     
     if(LOG){
       console.log(data);

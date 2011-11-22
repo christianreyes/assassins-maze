@@ -55,6 +55,7 @@ var users = {};
 io.sockets.on('connection', function (socket) {
   
   socket.on("add me to users", function (data) {
+    log("add me to users");
     log(data);
     
     users[socket.id] = data;

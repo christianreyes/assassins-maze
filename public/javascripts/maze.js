@@ -24,16 +24,29 @@ function Maze(paper, rows, cols, type, cell_width){
         }
       }
       break;
+    case "random":
+      for(var r=0; r<rows ; r++){
+        for(var c=0; c<cols ; c++){
+          var rand = Math.random();
+          // true = wall present   false = wall not present
+          this.matrix[r][c].wall = rand > .5 ;
+        }
+      }
+      break;
   }
   
   this.draw = function(){
     for(var r=0; r<rows ; r++){
+      var out = [];
       for(var c=0; c<cols ; c++){
-        if( this.matrix[r][c].wall ) {
-          var rect = paper.rect(r * cell_width, c * cell_width, cell_width, cell_width);
+        out.push( this.isWall(r,c) ? 1 : 0);
+        if( this.isWall(r, c) ) {
+          var rect = paper.rect(c * cell_width, r * cell_width, cell_width, cell_width);
+          //console.log("wall at: " + r + ", " + c);
           rect.attr({fill: "green", stroke: "none"}); // the wall unit
         }
       }
+      console.log(out);
     }
   };
   
