@@ -43,6 +43,7 @@ $(function(){
   //MAZE.draw();
   
   var my_circle;
+  var mask;
   
   var others = {};
   
@@ -79,6 +80,13 @@ $(function(){
     //var rc = {r:1, c:1};
     
     my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor() );
+    
+    mask = paper.image("/images/mask.png",
+                                   my_circle.element.attrs.cx - 500, 
+                                   my_circle.element.attrs.cy - 500, 
+                                   1000, 1000);
+                                          
+    my_circle.mask = mask;
     
     $("li.me").addClass(my_client_id);
     $("li.me span.color").css("background-color", my_circle.color );

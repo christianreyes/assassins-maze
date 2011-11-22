@@ -24,5 +24,12 @@ function Circle(id, maze, row, col, color){
                   cx: this.element.attrs.cx + maze.cell_width * xy_diffs.x, 
                   cy: this.element.attrs.cy + maze.cell_width * xy_diffs.y
                 });
+                
+    if( typeof(this.mask) != "undefined" ){
+      this.mask.attr({ 
+                    x: this.mask.attrs.x + maze.cell_width * xy_diffs.x, 
+                    y: this.mask.attrs.y + maze.cell_width * xy_diffs.y
+                  });
+    }
   };
 }
