@@ -37,9 +37,18 @@ $(function(){
   
   var my_client_id;
   
-  var paper = new Raphael($("#canvas_container")[0], 500, 420);
+  //var paper = new Raphael($("#canvas_container")[0], 780, 660);
+  
+  var paper = new ScaleRaphael("canvas_container", 780, 660);
+  
+  function resizePaper(){
+        var win = $(this);
+        paper.changeSize(win.width(), win.height(), true, false);
+  }    
+  
+  $(window).resize(resizePaper);
 
-  var MAZE = new Maze(paper, 21, 25, "hand", 20);
+  var MAZE = new Maze(paper, 33, 39, "full", 20);
   //MAZE.draw();
   
   var my_circle;
@@ -81,12 +90,12 @@ $(function(){
     
     my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor() );
     
-    mask = paper.image("/images/mask.png",
-                                   my_circle.element.attrs.cx - 500, 
-                                   my_circle.element.attrs.cy - 500, 
-                                   1000, 1000);
+    //mask = paper.image("/images/mask99.png",
+    //                               my_circle.element.attrs.cx - 700, 
+    //                               my_circle.element.attrs.cy - 700, 
+    //                               1400, 1400);
                                           
-    my_circle.mask = mask;
+    //my_circle.mask = mask;
     
     $("li.me").addClass(my_client_id);
     $("li.me span.color").css("background-color", my_circle.color );
@@ -100,7 +109,7 @@ $(function(){
                  position:  {r: my_circle.row, c: my_circle.col}
                 };
     
-    
+    resizePaper();
     
     $(window).bind("keydown", function(e){
       var key = e.keyCode ? e.keyCode : e.which ;
@@ -190,7 +199,7 @@ $(function(){
        removeOther({client_id: client_id});
      }
      
-     $('.' + my_client_id).fadeOut(1000, function(){
+     $('li.' + my_client_id).fadeOut(1000, function(){
        $(this).remove();
      });
      my_circle.element.animate({opacity: 0}, 1000, function(){
@@ -235,7 +244,7 @@ $(function(){
   }
   
   function removeOther(data){
-    $('.' + data.client_id).fadeOut(1000, function(){
+    $('li.' + data.client_id).fadeOut(1000, function(){
       $(this).remove();
     });
     others[data.client_id].element.animate({opacity: 0}, 1000, function(){
@@ -245,7 +254,7 @@ $(function(){
   }
   
   function log(data){
-    var LOG = false;
+    var LOG = true;
     
     if(LOG){
       console.log(data);
