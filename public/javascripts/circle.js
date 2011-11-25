@@ -6,7 +6,7 @@ function Circle(id, maze, row, col, color){
   this.element = maze.paper.circle(
                                  col * maze.cell_width + maze.cell_width / 2, 
                                  row * maze.cell_width + maze.cell_width / 2, 
-                                 10
+                                 9
                                 ).attr({fill: color, stroke:"none"});
   
   this.canMove = function(rc_diffs){

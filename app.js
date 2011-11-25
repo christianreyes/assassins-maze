@@ -53,6 +53,7 @@ function log(data){
 var users = {};
 
 io.sockets.on('connection', function (socket) {
+  socket.emit("current users", users);
   
   socket.on("add me to users", function (data) {
     log("add me to users");
@@ -60,7 +61,6 @@ io.sockets.on('connection', function (socket) {
     
     users[socket.id] = data;
     
-    socket.emit("current users", users);
     socket.broadcast.emit("new user connected", data);
   });
   
