@@ -193,7 +193,15 @@ $(function(){
     $("li." + data.client_id + " span.nickname").text(data.nickname);
   });
   
-
+  socket.on("new assassin", function(data){
+    if( data.assassin_id == my_client_id ){
+      my_circle.changeType(true);
+    } else {
+      if(typeof(others[data.assassin_id]) != "undefined"){
+        others[data.assassin_id].changeType(true);
+      } 
+    }
+  })
    
   socket.on("disconnect", function (){
     log("server disconnected");

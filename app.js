@@ -124,7 +124,7 @@ io.sockets.on('connection', function (socket) {
         log("new assassin " + assassin_id);
         users[assassin_id].assassin = true;
         
-        socket.broadcast.emit("new assassin", assassin_id);
+        socket.broadcast.emit("new assassin", { assassin_id: assassin_id });
       }
     }
   });
