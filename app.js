@@ -119,12 +119,19 @@ io.sockets.on('connection', function (socket) {
             }
         } 
         
-        assassin_id = ids[ Math.floor( Math.random() * ids.length ) ];
+        if( ids.length > 0 ){
+          assassin_id = ids[ Math.floor( Math.random() * ids.length ) ];
+
+          log("new assassin " + assassin_id);
+          users[assassin_id].assassin = true;
+
+          socket.broadcast.emit("new assassin", { assassin_id: assassin_id });
+        } else {
+          assassin_id = undefined;
+          log("no one to make assassin");
+        }
         
-        log("new assassin " + assassin_id);
-        users[assassin_id].assassin = true;
         
-        socket.broadcast.emit("new assassin", { assassin_id: assassin_id });
       }
     }
   });
