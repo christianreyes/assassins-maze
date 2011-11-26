@@ -51,9 +51,16 @@ function log(data){
 }
 
 var users = {};
+var assassin_id;
 
 io.sockets.on('connection', function (socket) {
-  socket.emit("you are", {type: "good"});
+  if(typeof(assassin_id) == "undefined"){
+    socket.emit("you are", {assassin: true});
+    assassin_id = socket.id;
+  } else {
+    socket.emit("you are", {assassin: false});
+  }
+  
   socket.emit("current users", users);
   
   socket.on("add me to users", function (data) {
@@ -99,7 +106,26 @@ io.sockets.on('connection', function (socket) {
     
     if(users[socket.id]){
       delete users[socket.id];
+      
       io.sockets.emit('user disconnected', { client_id: socket.id} );
+      
+      if(assassin_id == socket.id){
+        //pick new assassin
+        
+        var ids = [];
+        for (var client_id in users) {
+            if (users.hasOwnProperty(client_id)) {
+                ids.push(client_id);
+            }
+        } 
+        
+        assassin_id = ids[ Math.floor( Math.random() * ids.length ) ];
+        
+        log("new assassin " + assassin_id);
+        users[assassin_id].assassin = true;
+        
+        socket.broadcast.emit("new assassin", assassin_id);
+      }
     }
   });
   

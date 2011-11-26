@@ -91,9 +91,9 @@ $(function(){
     var rc = MAZE.randomCellRC();
     //var rc = {r:1, c:1};
     
-    my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor(), data.type );
+    my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor(), data.assassin );
     
-    mask = paper.image("/images/mask99.png",
+    mask = paper.image( data.assassin ? "/images/mask-bad.png" : "/images/mask-good.png" ,
                                    my_circle.get_x() + MAZE.cell_width / 2 - 775, 
                                    my_circle.get_y() + MAZE.cell_width / 2 - 775, 
                                    1550, 1550);
@@ -109,7 +109,8 @@ $(function(){
     var data = { 
                  client_id: my_client_id,
                  color:     my_circle.color,
-                 position:  {r: my_circle.row, c: my_circle.col}
+                 position:  {r: my_circle.row, c: my_circle.col},
+                 assassin: my_circle.assassin
                 };
     
     resizePaper();
@@ -125,16 +126,16 @@ $(function(){
 
           my_circle.move(xy_diffs, rc_diffs);
           
-          var data = { 
+          var move_data = { 
                         client_id: my_client_id,
                         key: key,
                         position: {r: my_circle.row, c: my_circle.col}
                       };
 
           log("i moved");
-          log(data);
+          log(move_data);
 
-          socket.emit('i moved', data);
+          socket.emit('i moved', move_data);
         }
       }
     });
@@ -194,22 +195,22 @@ $(function(){
   
 
    
-   socket.on("disconnect", function (){
-     log("server disconnected");
+  socket.on("disconnect", function (){
+    log("server disconnected");
      
-     $('#msg').text("Server Disconnected!").slideDown();
+    $('#msg').text("Server Disconnected!").slideDown();
      
-     for(client_id in others){
-       removeOther({client_id: client_id});
-     }
+    for(client_id in others){
+      removeOther({client_id: client_id});
+    }
      
-     $('li.' + my_client_id).fadeOut(1000, function(){
-       $(this).remove();
-     });
-     my_circle.element.animate({opacity: 0}, 1000, function(){
-       this.remove();
-     });
-   });
+    //$('li.' + my_client_id).fadeOut(1000, function(){
+    //   $(this).remove();
+    //});
+    my_circle.element.animate({opacity: 0}, 1000, function(){
+      my_circle.element.remove();
+    });
+  });
   
   /* 
   ============================
@@ -223,7 +224,8 @@ $(function(){
                                      MAZE,  
                                      data.position.r, 
                                      data.position.c, 
-                                     data.color );
+                                     data.color, 
+                                     data.assassin );
       
       others[data.client_id] = other_circle;
       
@@ -248,9 +250,9 @@ $(function(){
   }
   
   function removeOther(data){
-    $('li.' + data.client_id).fadeOut(1000, function(){
-      $(this).remove();
-    });
+    //$('li.' + data.client_id).fadeOut(1000, function(){
+    //  $(this).remove();
+    //});
     others[data.client_id].element.animate({opacity: 0}, 1000, function(){
       this.remove();
       delete others[data];

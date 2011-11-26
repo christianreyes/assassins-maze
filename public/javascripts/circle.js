@@ -1,4 +1,4 @@
-function Circle(id, maze, row, col, color, type){
+function Circle(id, maze, row, col, color, assassin){
   this.id = id;
   this.color = color;
   this.row = row;
@@ -10,7 +10,8 @@ function Circle(id, maze, row, col, color, type){
     return this.row * maze.cell_width;
   }
   
-  var fill_color = type == "good" ? "#fff" : "#333" ; //#fff if good #222 if bad
+  this.assassin = assassin;
+  var fill_color = assassin ? "#333" : "#fff" ; //#fff if good #333 if bad
                                 
   var good = maze.paper.set(); 
   var top = maze.paper.path("M16.779,5.693 c-1.298-2.981-4.265-5.068-7.723-5.068c-3.72,0-6.841,2.424-7.961,5.768C4.552,8.592,13.32,8.181,16.779,5.693z");
