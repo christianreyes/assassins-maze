@@ -53,6 +53,7 @@ function log(data){
 var users = {};
 
 io.sockets.on('connection', function (socket) {
+  socket.emit("you are", {type: "good"});
   socket.emit("current users", users);
   
   socket.on("add me to users", function (data) {

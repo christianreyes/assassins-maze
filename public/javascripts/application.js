@@ -84,15 +84,18 @@ $(function(){
     $('#msg').text("Server Connected!").delay(3000).slideUp();
     
     my_client_id = socket.socket.sessionid;
+  });
+  
+  socket.on("you are", function(data){
     
     var rc = MAZE.randomCellRC();
     //var rc = {r:1, c:1};
     
-    my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor() );
+    my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor(), data.type );
     
     mask = paper.image("/images/mask99.png",
-                                   my_circle.element.attrs.cx - 775, 
-                                   my_circle.element.attrs.cy - 775, 
+                                   my_circle.get_x() + MAZE.cell_width / 2 - 775, 
+                                   my_circle.get_y() + MAZE.cell_width / 2 - 775, 
                                    1550, 1550);
                                           
     my_circle.mask = mask;
@@ -254,15 +257,20 @@ $(function(){
     });
   }
   
-  function log(data){
-    var LOG = true;
-    
-    if(LOG){
-      console.log(data);
-    }
-  }
-  
-  function randomColor(){
-    return '#'+Math.floor(Math.random()*16777215).toString(16);
-  }
 });
+
+function log(data){
+  var LOG = true;
+
+  if(LOG){
+    console.log(data);
+  }
+}
+
+function randomColor(){
+  return '#'+Math.floor(Math.random()*16777215).toString(16);
+}
+
+function rc_to_xy(maze, row, col){
+  return { x: col * maze.cell_width, y: row * maze.cell_width };
+}
