@@ -90,12 +90,12 @@ $(function(){
     
     my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor() );
     
-    //mask = paper.image("/images/mask99.png",
-    //                               my_circle.element.attrs.cx - 700, 
-    //                               my_circle.element.attrs.cy - 700, 
-    //                               1400, 1400);
+    mask = paper.image("/images/mask99.png",
+                                   my_circle.element.attrs.cx - 775, 
+                                   my_circle.element.attrs.cy - 775, 
+                                   1550, 1550);
                                           
-    //my_circle.mask = mask;
+    my_circle.mask = mask;
     
     $("li.me").addClass(my_client_id);
     $("li.me span.color").css("background-color", my_circle.color );
