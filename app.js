@@ -91,14 +91,14 @@ io.sockets.on('connection', function (socket) {
     }
   });
   
-  socket.on("mouse move", function (data) {
+  socket.on("killed", function (data){
     log(data);
+    users[assassin_id].assassin = false;
+    users[data.target_id].assassin = true;
+    users[data.target_id].position = data.new_rc;
+    assassin_id = data.target_id;
     
-    if(users[data.client_id]){
-      users[ data.client_id ].coords = data.coords;
-    
-      socket.broadcast.emit("mouse moved", data);
-    }
+    socket.broadcast.emit("killed", data);
   });
   
   socket.on('disconnect', function () {    

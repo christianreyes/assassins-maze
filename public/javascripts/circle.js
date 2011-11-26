@@ -33,8 +33,8 @@ function Circle(id, maze, row, col, color, assassin){
     this.assassin = is_assassin;
     
     var fill_color = is_assassin ? "#333" : "#fff" ; //#fff if good #333 if bad
-    top.attr({ fill: fill_color });
-    bottom.attr({ fill: fill_color });
+    top.animate({ fill: fill_color }, 500);
+    bottom.animate({ fill: fill_color }, 500);
   }
   
   this.element = good;
@@ -63,4 +63,26 @@ function Circle(id, maze, row, col, color, assassin){
                   });
     }
   };
+  
+  this.killed = function(new_rc){
+    var new_xy = rc_to_xy(maze, new_rc.r, new_rc.c);
+    
+    this.row = new_rc.r;
+    this.col = new_rc.c;
+    
+    var this_circle = this;
+    
+    this.element.animate({ transform: "t " +
+                                          new_xy.x
+                                          + ", " + 
+                                          new_xy.y
+                        }, "1000", "bounce", function(){  this_circle.changeType(true); });
+                
+    if( typeof(this.mask) != "undefined" ){
+      this.mask.animate({ 
+                    x: new_xy.x + maze.cell_width / 2 - 775,
+                    y: new_xy.y + maze.cell_width / 2 - 775,
+                   }, 250, "bounce");
+    }
+  }
 }
