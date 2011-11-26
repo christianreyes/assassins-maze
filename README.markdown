@@ -21,4 +21,4 @@ TODO:
 * background music
 * sound effects
 * have the game end
--	end of game stats
+* end of game stats
