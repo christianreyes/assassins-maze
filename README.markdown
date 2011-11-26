@@ -15,10 +15,10 @@ Use it! Try it out in multiple windows!
 
 Use the arrow keys to move around.
 
-TODO: 
-* Good vs bad distinction
-* Killing
-* background music
-* sound effects
-* have the game end
-* end of game stats
+###TODO 
+1. Good vs bad distinction
+2. Killing
+3. background music
+4. sound effects
+5. have the game end
+6. end of game stats
