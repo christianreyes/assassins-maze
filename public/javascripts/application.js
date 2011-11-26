@@ -124,7 +124,8 @@ $(function(){
           
           var data = { 
                         client_id: my_client_id,
-                        key: key
+                        key: key,
+                        position: {r: my_circle.row, c: my_circle.col}
                       };
 
           log("i moved");

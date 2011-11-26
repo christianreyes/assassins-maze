@@ -76,8 +76,8 @@ io.sockets.on('connection', function (socket) {
   
   socket.on('i moved', function (data) {
     log(data);
-    if(users[socket.id]){
-      users[ socket.id ].position = data.position;
+    if(users[data.client_id]){
+      users[ data.client_id ].position = data.position;
     
       socket.broadcast.emit('user moved', data);
     }
