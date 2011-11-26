@@ -91,14 +91,7 @@ $(function(){
     var rc = MAZE.randomCellRC();
     //var rc = {r:1, c:1};
     
-    my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor(), data.assassin );
-    
-    mask = paper.image( data.assassin ? "/images/mask-bad.png" : "/images/mask-good.png" ,
-                                   my_circle.get_x() + MAZE.cell_width / 2 - 775, 
-                                   my_circle.get_y() + MAZE.cell_width / 2 - 775, 
-                                   1550, 1550);
-                                          
-    my_circle.mask = mask;
+    my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor(), data.assassin, true );
     
     $("li.me").addClass(my_client_id);
     $("li.me span.color").css("background-color", my_circle.color );
@@ -270,7 +263,8 @@ $(function(){
                                      data.position.r, 
                                      data.position.c, 
                                      data.color, 
-                                     data.assassin );
+                                     data.assassin, 
+                                     false );
       
       others[data.client_id] = other_circle;
       

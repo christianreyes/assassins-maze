@@ -1,4 +1,4 @@
-function Circle(id, maze, row, col, color, assassin){
+function Circle(id, maze, row, col, color, assassin, mask){
   this.id = id;
   this.color = color;
   this.row = row;
@@ -28,9 +28,19 @@ function Circle(id, maze, row, col, color, assassin){
   
   good.attr({transform: "t " + location.x + "," + location.y});
   
+  if(mask){
+    this.mask = maze.paper.image( assassin ? "/images/mask-bad.png" : "/images/mask-good.png" ,
+                                 location.x + maze.cell_width / 2 - 775, 
+                                 location.y + maze.cell_width / 2 - 775, 
+                                 1550, 1550);
+  }
    
   this.changeType = function(is_assassin){
     this.assassin = is_assassin;
+    
+    if( typeof(this.mask) != "undefined"){
+      this.mask.attr({src: is_assassin ? "/images/mask-bad.png" : "/images/mask-good.png"});
+    }
     
     var fill_color = is_assassin ? "#333" : "#fff" ; //#fff if good #333 if bad
     top.animate({ fill: fill_color }, 500);
