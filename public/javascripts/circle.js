@@ -82,11 +82,16 @@ function Circle(id, maze, row, col, color, assassin, mask){
     
     var this_circle = this;
     
+    _not_animating = false;
+    
     this.element.animate({ transform: "t " +
                                           new_xy.x
                                           + ", " + 
                                           new_xy.y
-                        }, "1000", "bounce", function(){  this_circle.changeType(true); });
+                        }, "1000", "bounce", function(){  
+                                              this_circle.changeType(true);
+                                              _not_animating = true; 
+                                          });
                 
     if( typeof(this.mask) != "undefined" ){
       this.mask.animate({ 

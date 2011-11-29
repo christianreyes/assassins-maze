@@ -1,3 +1,5 @@
+var _not_animating = true;
+
 $(function(){
   
   /* 
@@ -109,45 +111,47 @@ $(function(){
     resizePaper();
     
     $(window).bind("keydown", function(e){
-      var key = e.keyCode ? e.keyCode : e.which ;
+      if(_not_animating){
+        var key = e.keyCode ? e.keyCode : e.which ;
 
-      if( key in key_to_xy) {
-        var rc_diffs =  key_to_rc[ key ];
+        if( key in key_to_xy) {
+          var rc_diffs =  key_to_rc[ key ];
 
-        if( my_circle.canMove(rc_diffs) ) {
-          var xy_diffs = key_to_xy[ key ];
+          if( my_circle.canMove(rc_diffs) ) {
+            var xy_diffs = key_to_xy[ key ];
 
-          my_circle.move(xy_diffs, rc_diffs);
-          
-          var move_data = { 
-                        client_id: my_client_id,
-                        key: key,
-                        position: {r: my_circle.row, c: my_circle.col}
-                      };
+            my_circle.move(xy_diffs, rc_diffs);
 
-          log("i moved");
-          log(move_data);
+            var move_data = { 
+                          client_id: my_client_id,
+                          key: key,
+                          position: {r: my_circle.row, c: my_circle.col}
+                        };
 
-          socket.emit('i moved', move_data);
-          
-          if(my_circle.assassin) { 
-            for(client_id in others){
-              var other = others[client_id];
-              if(my_circle.row == other.row && my_circle.col == other.col){
-                log("killed: " + client_id);
-              
-                my_circle.changeType(false);
-              
-                var new_rc = MAZE.randomCellRC();
-                other.killed(new_rc);
-              
-                var kill_data = {
-                                  assassin_id: my_client_id,
-                                  target_id: client_id,
-                                  new_rc: new_rc
-                                 }; 
-              
-                socket.emit("killed", kill_data);
+            log("i moved");
+            log(move_data);
+
+            socket.emit('i moved', move_data);
+
+            if(my_circle.assassin) { 
+              for(client_id in others){
+                var other = others[client_id];
+                if(my_circle.row == other.row && my_circle.col == other.col){
+                  log("killed: " + client_id);
+
+                  my_circle.changeType(false);
+
+                  var new_rc = MAZE.randomCellRC();
+                  other.killed(new_rc);
+
+                  var kill_data = {
+                                    assassin_id: my_client_id,
+                                    target_id: client_id,
+                                    new_rc: new_rc
+                                   }; 
+
+                  socket.emit("killed", kill_data);
+                }
               }
             }
           }
