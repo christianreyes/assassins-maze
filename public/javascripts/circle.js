@@ -88,7 +88,7 @@ function Circle(id, maze, row, col, color, assassin, mask){
                                           new_xy.x
                                           + ", " + 
                                           new_xy.y
-                        }, "1000", "bounce", function(){  
+                        }, 750, "bounce", function(){  
                                               this_circle.changeType(true);
                                               _not_animating = true; 
                                           });
