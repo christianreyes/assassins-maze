@@ -72,16 +72,6 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit("new user connected", data);
   });
   
-  socket.on("new nickname", function (data) {
-    log(data);
-    
-    if(users[data.client_id]){
-      users[data.client_id].nickname = data.nickname;
-
-      socket.broadcast.emit("changed nickname", data);
-    }
-  });
-  
   socket.on('i moved', function (data) {
     log(data);
     if(users[data.client_id]){

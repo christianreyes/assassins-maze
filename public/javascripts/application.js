@@ -8,35 +8,6 @@ $(function(){
   ============================
   */
   
-  $('input.nickname').bind("keydown", function(e){
-     var code = (e.keyCode ? e.keyCode : e.which);
-      if(code == 13) { //Enter keycode
-        changeNickname();
-        $(this).blur();
-        $('#canvas_container').focus();
-      }
-  });
-  
-  function changeNickname(){
-    var data = { 
-                  client_id: my_client_id,
-                  nickname: $("input.nickname").val()
-                 };
-
-     log("change_nickname");
-     log(data);
-
-     socket.emit("new nickname", data);
-
-     $("li.me span.nickname").text($("input.nickname").val());
-  }
-  
-  $("button.change_nickname").click(function(){
-    changeNickname()
-    $('#canvas_container').focus();
-    return false;
-  });
-  
   var my_client_id;
   
   //var paper = new Raphael($("#canvas_container")[0], 780, 660);
