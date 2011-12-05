@@ -24,6 +24,8 @@ $(function(){
   var MAZE = new Maze(paper, 33, 39, "full", 20);
   //MAZE.draw();
   
+  var blood;
+  
   var my_circle;
   var mask;
   
@@ -66,12 +68,6 @@ $(function(){
     
     my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor(), data.assassin, true );
     
-    $("li.me").addClass(my_client_id);
-    $("li.me span.color").css("background-color", my_circle.color );
-    $("li.me span.nickname").text("User");
-                        
-    $('span#circle').css("background-color", my_circle.color );
-                          
     var data = { 
                  client_id: my_client_id,
                  color:     my_circle.color,
@@ -120,6 +116,8 @@ $(function(){
                                     target_id: client_id,
                                     new_rc: new_rc
                                    }; 
+                                   
+                  bloodSplat(paper);
 
                   socket.emit("killed", kill_data);
                 }
@@ -138,10 +136,12 @@ $(function(){
     if(data.target_id == my_client_id){
       others[data.assassin_id].changeType(false);
       my_circle.killed(data.new_rc);
+      bloodSplat(paper);
     }
     if( typeof(others[data.target_id]) != "undefined" ){
       others[data.assassin_id].changeType(false);
       others[data.target_id].killed(data.new_rc);
+      bloodSplat(paper);
     }
   });
   
@@ -158,11 +158,7 @@ $(function(){
     }
 
   });
-  
-  socket.on("killed", function (data) {
-    
-  });
-  
+
   socket.on("new user connected", function (data){
     log("new user connected");
     log(data);
