@@ -90,7 +90,7 @@ function Circle(id, maze, row, col, color, assassin, mask){
                                           new_xy.x
                                           + ", " + 
                                           new_xy.y
-                        }, 750, "bounce", function(){  
+                        }, 500, "bounce", function(){  
                                               this_circle.changeType(true);
                                               if( me ){
                                                 _not_animating = true;
@@ -101,7 +101,7 @@ function Circle(id, maze, row, col, color, assassin, mask){
       this.mask.animate({ 
                     x: new_xy.x + maze.cell_width / 2 - 775,
                     y: new_xy.y + maze.cell_width / 2 - 775,
-                   }, 250, "bounce");
+                   }, 100, "bounce");
     }
   }
 }

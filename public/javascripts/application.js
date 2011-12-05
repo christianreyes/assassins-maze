@@ -29,6 +29,8 @@ $(function(){
   var my_circle;
   var mask;
   
+  var assassin_id;
+  
   var others = {};
   
   var key_to_xy = { 
@@ -67,6 +69,10 @@ $(function(){
     //var rc = {r:1, c:1};
     
     my_circle = new Circle( my_client_id , MAZE,  rc.r, rc.c, randomColor(), data.assassin, true );
+    
+    if(data.assassin){
+      assassin_id = my_client_id;
+    }
     
     var data = { 
                  client_id: my_client_id,
@@ -110,6 +116,8 @@ $(function(){
 
                   var new_rc = MAZE.randomCellRC();
                   other.killed(false, new_rc);
+                  
+                  assassin_id = client_id;
 
                   var kill_data = {
                                     assassin_id: my_client_id,
@@ -121,6 +129,29 @@ $(function(){
 
                   socket.emit("killed", kill_data);
                 }
+              }
+            } else {
+              var assassin = others[assassin_id];
+              
+              if(my_circle.row == assassin.row && my_circle.col == assassin.col){
+                log("killed: " + my_client_id);
+
+                assassin.changeType(false);
+
+                var new_rc = MAZE.randomCellRC();
+                my_circle.killed(true, new_rc);
+                
+                assassin_id = my_client_id;
+
+                var kill_data = {
+                                  assassin_id: assassin_id,
+                                  target_id: my_client_id,
+                                  new_rc: new_rc
+                                 }; 
+                                 
+                bloodSplat(paper);
+
+                socket.emit("killed", kill_data);
               }
             }
           }
@@ -135,13 +166,16 @@ $(function(){
   socket.on("killed", function (data){
     if(data.target_id == my_client_id){
       others[data.assassin_id].changeType(false);
-      my_circle.killed(true, data.new_rc);
+      my_circle.killed(true, data.new_rc); 
+      assassin_id = my_client_id;
       bloodSplat(paper);
     }
     if( typeof(others[data.target_id]) != "undefined" ){
+      my_circle.changeType(false);
       others[data.assassin_id].changeType(false);
       others[data.target_id].killed(false, data.new_rc);
       bloodSplat(paper);
+      assassin_id = data.target_id;
     }
   });
   
@@ -187,14 +221,9 @@ $(function(){
     removeOther(data);
   });
   
-  socket.on("changed nickname", function (data){
-    log("changed nickname");
-    log(data);
-    
-    $("li." + data.client_id + " span.nickname").text(data.nickname);
-  });
-  
   socket.on("new assassin", function(data){
+    assassin_id = data.assassin_id;
+    
     if( data.assassin_id == my_client_id ){
       my_circle.changeType(true);
     } else {
@@ -239,23 +268,9 @@ $(function(){
       
       others[data.client_id] = other_circle;
       
-      var new_li = $("<li></li");
-      new_li.addClass(data.client_id);
-
-      var color = $("<span class='color'></span>");
-      color.css('background-color', data.color);
-
-      var nickname = $("<span class='nickname'></span>");
-
-      if( typeof(data.nickname) == "undefined" ){
-        nickname.text("User");
-      } else {
-        nickname.text(data.nickname);
+      if(data.assassin){
+        assassin_id = data.client_id;
       }
-      
-      new_li.append(color);
-      new_li.append(nickname);
-      $("ul#users").append(new_li);
     }
   }
   
