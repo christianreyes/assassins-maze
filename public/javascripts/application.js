@@ -109,7 +109,7 @@ $(function(){
                   my_circle.changeType(false);
 
                   var new_rc = MAZE.randomCellRC();
-                  other.killed(new_rc);
+                  other.killed(false, new_rc);
 
                   var kill_data = {
                                     assassin_id: my_client_id,
@@ -135,12 +135,12 @@ $(function(){
   socket.on("killed", function (data){
     if(data.target_id == my_client_id){
       others[data.assassin_id].changeType(false);
-      my_circle.killed(data.new_rc);
+      my_circle.killed(true, data.new_rc);
       bloodSplat(paper);
     }
     if( typeof(others[data.target_id]) != "undefined" ){
       others[data.assassin_id].changeType(false);
-      others[data.target_id].killed(data.new_rc);
+      others[data.target_id].killed(false, data.new_rc);
       bloodSplat(paper);
     }
   });

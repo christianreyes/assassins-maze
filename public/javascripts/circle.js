@@ -74,7 +74,7 @@ function Circle(id, maze, row, col, color, assassin, mask){
     }
   };
   
-  this.killed = function(new_rc){
+  this.killed = function(me, new_rc){
     var new_xy = rc_to_xy(maze, new_rc.r, new_rc.c);
     
     this.row = new_rc.r;
@@ -82,7 +82,9 @@ function Circle(id, maze, row, col, color, assassin, mask){
     
     var this_circle = this;
     
-    _not_animating = false;
+    if( me ){
+      _not_animating = false;
+    }
     
     this.element.animate({ transform: "t " +
                                           new_xy.x
@@ -90,7 +92,9 @@ function Circle(id, maze, row, col, color, assassin, mask){
                                           new_xy.y
                         }, 750, "bounce", function(){  
                                               this_circle.changeType(true);
-                                              _not_animating = true; 
+                                              if( me ){
+                                                _not_animating = true;
+                                              }
                                           });
                 
     if( typeof(this.mask) != "undefined" ){
