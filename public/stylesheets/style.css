@@ -53,6 +53,11 @@ img.close {
   margin-bottom: 25px;
 }
 
+.instructions li span.info{
+  display: block;
+  margin-top: 25px;
+}
+
 .instructions li:nth-child(n+2){
   border-left: 1px dashed #333;
 }
