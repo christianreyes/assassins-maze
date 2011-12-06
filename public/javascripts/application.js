@@ -83,6 +83,14 @@ $(function(){
     
     resizePaper();
     
+    $('.instructions').slideDown(1000, "swing", function(){
+      $('.instructions .close').fadeIn(function(){
+        $(this).click(function(){
+          $('.instructions').slideUp();
+        });
+      });
+    });
+    
     $(window).bind("keydown", function(e){
       if(_not_animating){
         var key = e.keyCode ? e.keyCode : e.which ;
