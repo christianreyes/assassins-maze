@@ -101,7 +101,8 @@ $(function(){
           if( my_circle.canMove(rc_diffs) ) {
             var xy_diffs = key_to_xy[ key ];
 
-            my_circle.move(xy_diffs, rc_diffs);
+            my_circle.moveTo({ r: my_circle.row + rc_diffs.r,
+                               c: my_circle.col + rc_diffs.c });
 
             var move_data = { 
                           client_id: my_client_id,
@@ -178,7 +179,7 @@ $(function(){
       assassin_id = my_client_id;
       bloodSplat(paper);
     }
-    if( typeof(others[data.target_id]) != "undefined" ){
+    if( typeof(others[data.target_id]) != "undefined" && typeof(others[data.assassin_id]) != "undefined" ){
       my_circle.changeType(false);
       others[data.assassin_id].changeType(false);
       others[data.target_id].killed(false, data.new_rc);
@@ -216,10 +217,7 @@ $(function(){
     
     var circle = others[data.client_id];
     
-    var rc_diffs =  key_to_rc[ data.key ];
-    var xy_diffs =  key_to_xy[ data.key ];
-    
-    circle.move(xy_diffs, rc_diffs);
+    circle.moveTo(data.position);
   });
   
   socket.on("user disconnected", function (data){
@@ -295,7 +293,7 @@ $(function(){
 });
 
 function log(data){
-  var LOG = true;
+  var LOG = false;
 
   if(LOG){
     console.log(data);

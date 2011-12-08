@@ -74,6 +74,26 @@ function Circle(id, maze, row, col, color, assassin, mask){
     }
   };
   
+  this.moveTo = function(rc_position){
+    this.row = rc_position.r;
+    this.col = rc_position.c;
+    
+    var xy = rc_to_xy(maze, rc_position.r, rc_position.c);
+
+    this.element.attr({ transform: "t " +
+                                          xy.x
+                                          + ", " + 
+                                          xy.y
+                        });
+                
+    if( typeof(this.mask) != "undefined" ){
+      this.mask.attr({ 
+                    x: xy.x + maze.cell_width / 2 - 775,
+                    y: xy.y + maze.cell_width / 2 - 775
+                  });
+    }
+  };
+  
   this.killed = function(me, new_rc){
     var new_xy = rc_to_xy(maze, new_rc.r, new_rc.c);
     
