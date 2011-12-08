@@ -5,6 +5,7 @@ body {
 }
 
 #canvas_container {
+  display: none;
   z-index: -1;
 }
 

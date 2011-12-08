@@ -1,3 +1,6 @@
+// Perfect maze generation that was never used. Not tested much either. Doesn't work.
+// Not enough time to work on it.
+
 case "prim":
   var walls = [];
   
