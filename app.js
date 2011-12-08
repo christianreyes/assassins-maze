@@ -42,7 +42,7 @@ app.listen(port);
 //io.set('transports', ['xhr-polling']); 
 //io.set('polling duration', 10);
 
-var LOG = true;
+var LOG = false;
 
 function log(data){
   if(LOG) {
