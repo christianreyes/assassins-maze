@@ -39,10 +39,10 @@ var port = process.env.PORT || 3000;
 app.listen(port);
 
 // for Heroku
-//io.configure(function(){
-//  io.set('transports', ['xhr-polling']); 
-//  io.set('polling duration', 10);
-//});
+io.configure(function(){
+  io.set('transports', ['xhr-polling']); 
+  io.set('polling duration', 10);
+});
 
 var LOG = false;
 
