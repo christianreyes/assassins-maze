@@ -19,4 +19,4 @@ Use the arrow keys to move around.
 
 Targets are the white circles. Assassins are the black circles. They can kill the target upon contact. Try to stay alive as long as possible!
 
-Github Repo: [https://github.com/trogrey121/assassin-maze](https://github.com/trogrey121/assassin-maze)
+Github Repo: [https://github.com/trogrey121/assassins-maze](https://github.com/trogrey121/assassins-maze)
