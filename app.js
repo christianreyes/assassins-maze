@@ -15,6 +15,7 @@ var fs    = require('fs');
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.set('view options', { pretty: true });
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
@@ -39,10 +40,12 @@ var port = process.env.PORT || 3000;
 app.listen(port);
 
 // for Heroku
+/*
 io.configure(function(){
   io.set('transports', ['xhr-polling']); 
   io.set('polling duration', 10);
 });
+*/
 
 var LOG = false;
 
